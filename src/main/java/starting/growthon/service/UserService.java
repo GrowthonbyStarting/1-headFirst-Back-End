@@ -36,9 +36,9 @@ public class UserService {
 
     public ResponseEntity<TokenDto> login(LoginDto loginDto) {
 
-        // 이메일로 유저를 판별한 다음 유저가 없으면 생성해줘야 함
-        User user = userRepository.findByEmail(loginDto.getEmail()).orElseGet(
-                () -> createNewUser(loginDto.getEmail(), loginDto.getName()));
+        // 고유 식별자로 유저를 판별한 다음 유저가 없으면 생성해줘야 함
+        User user = userRepository.findByUuid(loginDto.getUuid()).orElseGet(
+                () -> createNewUser(loginDto.getName(), loginDto.getUuid()));
 
         SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority("ROLE_USER");
 
@@ -55,8 +55,8 @@ public class UserService {
     }
 
     // 유저 신규 생성
-    private User createNewUser(String email, String name) {
-        return userRepository.save(new User(email, name));
+    private User createNewUser(String name, Long uuid) {
+        return userRepository.save(new User(name, uuid));
     }
 
     public User profile() {
