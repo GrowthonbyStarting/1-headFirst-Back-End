@@ -6,11 +6,11 @@ import lombok.Setter;
 @Getter
 @Setter
 public class LoginDto {
-    private String email;
     private String name;
+    private Long uuid;
 
-    public LoginDto(String email, String name) {
-        this.email = email;
+    public LoginDto(String name, Long uuid) {
         this.name = name;
+        this.uuid = uuid;
     }
 }

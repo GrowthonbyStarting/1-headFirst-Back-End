@@ -21,9 +21,10 @@ public class User {
 
     private String email;
     private String name;
+    private Long uuid; // 카카오 고유 ID 위함
 
-    public User(String email, String name) {
-        this.email = email;
+    public User(String name, Long uuid) {
         this.name = name;
+        this.uuid = uuid;
     }
 }
