@@ -11,12 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import starting.growthon.dto.LoginDto;
 import starting.growthon.dto.TokenDto;
-import starting.growthon.dto.UserDto;
 import starting.growthon.entity.User;
-import starting.growthon.exception.AlreadyExistUserException;
-import starting.growthon.exception.LoginException;
-import starting.growthon.exception.NotQualifiedDtoException;
-import starting.growthon.exception.TargetNotFoundException;
 import starting.growthon.jwt.JwtFilter;
 import starting.growthon.jwt.TokenProvider;
 import starting.growthon.repository.UserRepository;
@@ -37,37 +32,31 @@ public class UserService {
         this.userUtil = userUtil;
     }
 
-    public User signup(UserDto userDto) {
-
-        if (userDto.getName() == null || userDto.getEmail() == null)
-            throw new NotQualifiedDtoException("name 또는 email이 비어있습니다.");
-
-        if (userRepository.findByName(userDto.getName()).isPresent())
-            throw new AlreadyExistUserException("이미 가입되어 있는 유저입니다.");
-
-        User newUser = new User(userDto.getEmail(), userDto.getName());
-
-        return userRepository.save(newUser);
-    }
+    // 소셜 로그인에 따라 회원가입 로직은 삭제
 
     public ResponseEntity<TokenDto> login(LoginDto loginDto) {
 
+        // 이메일로 유저를 판별한 다음 유저가 없으면 생성해줘야 함
+        User user = userRepository.findByEmail(loginDto.getEmail()).orElseGet(
+                () -> createNewUser(loginDto.getEmail(), loginDto.getName()));
+
         SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority("ROLE_USER");
+
         Authentication authentication = new UsernamePasswordAuthenticationToken(loginDto.getName(),null,
                 Collections.singleton(simpleGrantedAuthority));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        User user = userRepository.findByName(loginDto.getName())
-                .orElseThrow(() -> new TargetNotFoundException("없는 유저입니다."));
 
-        if (!user.getEmail().equals(loginDto.getEmail())) {
-            throw new LoginException("이메일이 일치하지 않습니다.");
-        }
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String jwt = tokenProvider.createToken(authentication, user);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
 
         return new ResponseEntity<>(new TokenDto(jwt), httpHeaders, HttpStatus.OK);
+    }
+
+    // 유저 신규 생성
+    private User createNewUser(String email, String name) {
+        return userRepository.save(new User(email, name));
     }
 
     public User profile() {
