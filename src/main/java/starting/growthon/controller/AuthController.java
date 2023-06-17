@@ -7,8 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import starting.growthon.dto.LoginDto;
-import starting.growthon.dto.UserDto;
-import starting.growthon.entity.User;
+import starting.growthon.dto.TokenDto;
 import starting.growthon.exception.*;
 import starting.growthon.service.UserService;
 
@@ -21,27 +20,10 @@ public class AuthController {
         this.userService = userService;
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<?> signup(@RequestBody UserDto userDto) {
-        try {
-            User newUser = userService.signup(userDto);
-            return ResponseEntity.ok(newUser);
-        } catch (NotQualifiedDtoException | AlreadyExistUserException e) {
-            return errorMessage(e);
-        }
-    }
+    // 소셜 로그인에 따라 회원가입 로직은 삭제
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginDto loginDto) {
-        try {
-            return userService.login(loginDto);
-        } catch (TargetNotFoundException | LoginException e) {
-            return errorMessage(e);
-        }
-    }
-
-    private static ResponseEntity<ExceptionResponse> errorMessage(RuntimeException e) {
-        ExceptionResponse exceptionResponse = new ExceptionResponse(e.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
+    public ResponseEntity<TokenDto> login(@RequestBody LoginDto loginDto) {
+        return userService.login(loginDto);
     }
 }
