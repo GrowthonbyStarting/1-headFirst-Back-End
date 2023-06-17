@@ -19,7 +19,7 @@ public class HomeController {
 
     @GetMapping("/test")
     public ResponseEntity<String> home() {
-        return ResponseEntity.ok("test page");
+        return ResponseEntity.ok("test page (edit test)");
     }
 
     @GetMapping("/profile")
