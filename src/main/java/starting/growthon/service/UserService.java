@@ -53,6 +53,11 @@ public class UserService {
 
         return new ResponseEntity<>(new TokenDto(jwt), httpHeaders, HttpStatus.OK);
     }
+    public User changeRole() {
+        User targetUser = userUtil.getLoggedInUser();
+        targetUser.setRole("MENTOR");
+        return targetUser;
+    }
 
     // 유저 신규 생성
     private User createNewUser(String name, Long uuid) {
