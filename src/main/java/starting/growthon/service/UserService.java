@@ -11,9 +11,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import starting.growthon.dto.LoginDto;
 import starting.growthon.dto.TokenDto;
+import starting.growthon.entity.MentorInfo;
 import starting.growthon.entity.User;
 import starting.growthon.jwt.JwtFilter;
 import starting.growthon.jwt.TokenProvider;
+import starting.growthon.repository.MentorInfoRepository;
 import starting.growthon.repository.UserRepository;
 import starting.growthon.util.UserUtil;
 
@@ -23,11 +25,14 @@ import java.util.Collections;
 @Transactional
 public class UserService {
     private final UserRepository userRepository;
+    private final MentorInfoRepository mentorInfoRepository;
     private final TokenProvider tokenProvider;
     private final UserUtil userUtil;
 
-    public UserService(UserRepository userRepository, TokenProvider tokenProvider, UserUtil userUtil) {
+    public UserService(UserRepository userRepository, MentorInfoRepository mentorInfoRepository,
+                       TokenProvider tokenProvider, UserUtil userUtil) {
         this.userRepository = userRepository;
+        this.mentorInfoRepository = mentorInfoRepository;
         this.tokenProvider = tokenProvider;
         this.userUtil = userUtil;
     }
@@ -53,9 +58,11 @@ public class UserService {
 
         return new ResponseEntity<>(new TokenDto(jwt), httpHeaders, HttpStatus.OK);
     }
+
     public User changeRole() {
         User targetUser = userUtil.getLoggedInUser();
         targetUser.setRole("MENTOR");
+        createMentorInfo(targetUser);
         return targetUser;
     }
 
@@ -68,4 +75,8 @@ public class UserService {
         return userUtil.getLoggedInUser();
     }
 
+    private void createMentorInfo(User user) {
+        MentorInfo mentorInfo = new MentorInfo(0L, "", false, user);
+        user.setMentorInfo(mentorInfoRepository.save(mentorInfo));
+    }
 }
