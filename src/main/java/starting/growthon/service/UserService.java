@@ -11,12 +11,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import starting.growthon.dto.LoginDto;
 import starting.growthon.dto.TokenDto;
+import starting.growthon.dto.response.UserInfoDto;
 import starting.growthon.entity.MentorInfo;
 import starting.growthon.entity.User;
 import starting.growthon.jwt.JwtFilter;
 import starting.growthon.jwt.TokenProvider;
-import starting.growthon.repository.MentorInfoRepository;
-import starting.growthon.repository.UserRepository;
+import starting.growthon.repository.*;
 import starting.growthon.util.UserUtil;
 
 import java.util.Collections;
@@ -26,13 +26,24 @@ import java.util.Collections;
 public class UserService {
     private final UserRepository userRepository;
     private final MentorInfoRepository mentorInfoRepository;
+    private final UserAndUniversityRepository userAndUniversityRepository;
+    private final UserAndMajorRepository userAndMajorRepository;
+    private final UserAndCompanyRepository userAndCompanyRepository;
+    private final UserAndJobRepository userAndJobRepository;
     private final TokenProvider tokenProvider;
     private final UserUtil userUtil;
 
     public UserService(UserRepository userRepository, MentorInfoRepository mentorInfoRepository,
+                       UserAndUniversityRepository userAndUniversityRepository,
+                       UserAndMajorRepository userAndMajorRepository,
+                       UserAndCompanyRepository userAndCompanyRepository, UserAndJobRepository userAndJobRepository,
                        TokenProvider tokenProvider, UserUtil userUtil) {
         this.userRepository = userRepository;
         this.mentorInfoRepository = mentorInfoRepository;
+        this.userAndUniversityRepository = userAndUniversityRepository;
+        this.userAndMajorRepository = userAndMajorRepository;
+        this.userAndCompanyRepository = userAndCompanyRepository;
+        this.userAndJobRepository = userAndJobRepository;
         this.tokenProvider = tokenProvider;
         this.userUtil = userUtil;
     }
@@ -71,8 +82,15 @@ public class UserService {
         return userRepository.save(new User(name, uuid));
     }
 
-    public User profile() {
-        return userUtil.getLoggedInUser();
+    public UserInfoDto profile() {
+        User targetUser = userUtil.getLoggedInUser();
+        UserInfoDto newUserInfoDto = new UserInfoDto();
+        newUserInfoDto.setUser(targetUser);
+        newUserInfoDto.setUniversities(userAndUniversityRepository.findAllByUserId(targetUser.getId()));
+        newUserInfoDto.setMajors(userAndMajorRepository.findAllByUserId(targetUser.getId()));
+        newUserInfoDto.setCompanies(userAndCompanyRepository.findAllByUserId(targetUser.getId()));
+        newUserInfoDto.setJobs(userAndJobRepository.findAllByUserId(targetUser.getId()));
+        return newUserInfoDto;
     }
 
     private void createMentorInfo(User user) {
