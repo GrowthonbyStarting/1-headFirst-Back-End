@@ -5,9 +5,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import starting.growthon.dto.response.UserInfoDto;
 import starting.growthon.exception.ExceptionResponse;
 import starting.growthon.exception.NotLoggedInException;
 import starting.growthon.service.UserService;
+
+import java.util.List;
 
 @RestController("/")
 public class RootController {
@@ -30,6 +33,12 @@ public class RootController {
         } catch (NotLoggedInException e) {
             return errorMessage(e);
         }
+    }
+
+    @GetMapping("/main")
+    public ResponseEntity<List<UserInfoDto>> mainRoom() {
+        // 모든 멘토들이 식별되어야 함 (조건 없다고 가정)
+        return ResponseEntity.ok(userService.findMentors());
     }
 
     @PostMapping("/role")

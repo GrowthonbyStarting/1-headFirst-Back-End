@@ -19,7 +19,9 @@ import starting.growthon.jwt.TokenProvider;
 import starting.growthon.repository.*;
 import starting.growthon.util.UserUtil;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 @Service
 @Transactional
@@ -84,12 +86,29 @@ public class UserService {
 
     public UserInfoDto profile() {
         User targetUser = userUtil.getLoggedInUser();
+        return createUserInfo(targetUser);
+    }
+
+    public List<UserInfoDto> findMentors() {
+        List<User> allMentors = userRepository.findAll()
+                .stream().filter(user -> user.getRole().equals("MENTOR"))
+                .toList();
+        List<UserInfoDto> result = new ArrayList<>();
+        allMentors.forEach(mentor -> {
+            UserInfoDto newUserInfoDto = createUserInfo(mentor);
+            result.add(newUserInfoDto);
+        });
+
+        return result;
+    }
+
+    private UserInfoDto createUserInfo(User user) {
         UserInfoDto newUserInfoDto = new UserInfoDto();
-        newUserInfoDto.setUser(targetUser);
-        newUserInfoDto.setUniversities(userAndUniversityRepository.findAllByUserId(targetUser.getId()));
-        newUserInfoDto.setMajors(userAndMajorRepository.findAllByUserId(targetUser.getId()));
-        newUserInfoDto.setCompanies(userAndCompanyRepository.findAllByUserId(targetUser.getId()));
-        newUserInfoDto.setJobs(userAndJobRepository.findAllByUserId(targetUser.getId()));
+        newUserInfoDto.setUser(user);
+        newUserInfoDto.setUniversities(userAndUniversityRepository.findAllByUserId(user.getId()));
+        newUserInfoDto.setMajors(userAndMajorRepository.findAllByUserId(user.getId()));
+        newUserInfoDto.setCompanies(userAndCompanyRepository.findAllByUserId(user.getId()));
+        newUserInfoDto.setJobs(userAndJobRepository.findAllByUserId(user.getId()));
         return newUserInfoDto;
     }
 
