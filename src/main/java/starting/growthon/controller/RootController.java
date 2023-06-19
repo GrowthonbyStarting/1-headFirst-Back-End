@@ -3,29 +3,39 @@ package starting.growthon.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import starting.growthon.exception.ExceptionResponse;
 import starting.growthon.exception.NotLoggedInException;
 import starting.growthon.service.UserService;
 
 @RestController("/")
-public class HomeController {
+public class RootController {
 
     private final UserService userService;
 
-    public HomeController(UserService userService) {
+    public RootController(UserService userService) {
         this.userService = userService;
     }
 
     @GetMapping("/test")
     public ResponseEntity<String> home() {
-        return ResponseEntity.ok("test page");
+        return ResponseEntity.ok("test page (edit test)");
     }
 
     @GetMapping("/profile")
     public ResponseEntity<?> profile() {
         try {
             return ResponseEntity.ok(userService.profile());
+        } catch (NotLoggedInException e) {
+            return errorMessage(e);
+        }
+    }
+
+    @PostMapping("/role")
+    public ResponseEntity<?> changeRole() {
+        try {
+            return ResponseEntity.ok(userService.changeRole());
         } catch (NotLoggedInException e) {
             return errorMessage(e);
         }
