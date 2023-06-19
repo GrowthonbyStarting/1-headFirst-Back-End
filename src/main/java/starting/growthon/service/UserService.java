@@ -22,6 +22,7 @@ import starting.growthon.util.UserUtil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -34,12 +35,14 @@ public class UserService {
     private final UserAndJobRepository userAndJobRepository;
     private final TokenProvider tokenProvider;
     private final UserUtil userUtil;
+    private final UserAndKeywordRepository userAndKeywordRepository;
 
     public UserService(UserRepository userRepository, MentorInfoRepository mentorInfoRepository,
                        UserAndUniversityRepository userAndUniversityRepository,
                        UserAndMajorRepository userAndMajorRepository,
                        UserAndCompanyRepository userAndCompanyRepository, UserAndJobRepository userAndJobRepository,
-                       TokenProvider tokenProvider, UserUtil userUtil) {
+                       TokenProvider tokenProvider, UserUtil userUtil,
+                       UserAndKeywordRepository userAndKeywordRepository) {
         this.userRepository = userRepository;
         this.mentorInfoRepository = mentorInfoRepository;
         this.userAndUniversityRepository = userAndUniversityRepository;
@@ -48,6 +51,7 @@ public class UserService {
         this.userAndJobRepository = userAndJobRepository;
         this.tokenProvider = tokenProvider;
         this.userUtil = userUtil;
+        this.userAndKeywordRepository = userAndKeywordRepository;
     }
 
     // 소셜 로그인에 따라 회원가입 로직은 삭제
@@ -104,12 +108,19 @@ public class UserService {
 
     private UserInfoDto createUserInfo(User user) {
         UserInfoDto newUserInfoDto = new UserInfoDto();
+        Long userId = user.getId();
         newUserInfoDto.setUser(user);
-        newUserInfoDto.setUniversities(userAndUniversityRepository.findAllByUserId(user.getId()));
-        newUserInfoDto.setMajors(userAndMajorRepository.findAllByUserId(user.getId()));
-        newUserInfoDto.setCompanies(userAndCompanyRepository.findAllByUserId(user.getId()));
-        newUserInfoDto.setJobs(userAndJobRepository.findAllByUserId(user.getId()));
+        newUserInfoDto.setUniversities(userAndUniversityRepository.findAllByUserId(userId));
+        newUserInfoDto.setMajors(userAndMajorRepository.findAllByUserId(userId));
+        newUserInfoDto.setCompanies(userAndCompanyRepository.findAllByUserId(userId));
+        newUserInfoDto.setJobs(userAndJobRepository.findAllByUserId(userId));
+        newUserInfoDto.setKeywords(getKeywords(userId));
         return newUserInfoDto;
+    }
+
+    private List<String> getKeywords(Long userId) {
+        return userAndKeywordRepository.findAllByUserId(userId).
+                stream().map(row -> row.getKeyword().getName()).collect(Collectors.toList());
     }
 
     private void createMentorInfo(User user) {

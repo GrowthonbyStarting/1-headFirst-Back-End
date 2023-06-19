@@ -14,4 +14,5 @@ public class UserInfoDto {
     List<UserAndMajor> majors;
     List<UserAndCompany> companies;
     List<UserAndJob> jobs;
+    List<String> keywords;
 }
