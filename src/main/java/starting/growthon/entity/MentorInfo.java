@@ -21,6 +21,8 @@ public class MentorInfo {
 
     private int view;
 
+    private boolean summary;
+    
     @OneToOne
     private User mentor;
 
