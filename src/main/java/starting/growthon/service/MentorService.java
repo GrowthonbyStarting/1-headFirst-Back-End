@@ -43,7 +43,7 @@ public class MentorService {
 
     private MentorInfo createMentorInfo(User targetUser) {
         if (mentorInfoRepository.findByMentorId(targetUser.getId()) == null) {
-            MentorInfo mentorInfo = new MentorInfo("", 0, 0, targetUser);
+            MentorInfo mentorInfo = new MentorInfo("", 0, 0, targetUser, null);
             return mentorInfoRepository.save(mentorInfo);
         }
         return mentorInfoRepository.findByMentorId(targetUser.getId());
