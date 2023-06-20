@@ -2,13 +2,10 @@ package starting.growthon.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
-@Getter
-@Setter
+@Getter @Setter
 @NoArgsConstructor
 public class User {
     @Id
@@ -16,19 +13,29 @@ public class User {
     @JsonIgnore
     private Long id;
 
-    private String email;
+    private Long uuid;
+
     private String name;
-    private Long uuid; // 카카오 고유 ID 위함
+
+    private String nickname;
+
+    private String email;
 
     private String role;
 
-    @OneToOne
-    @JoinColumn(name = "mentor_info_id")
-    private MentorInfo mentorInfo;
+    private int year;
 
-    public User(String name, Long uuid) {
-        this.name = name;
+    @ManyToOne
+    @JoinColumn(name = "company_id")
+    private Company company;
+
+    @ManyToOne
+    @JoinColumn(name = "sub_job_id")
+    private SubJob subjob;
+
+    public User(Long uuid, String name) {
         this.uuid = uuid;
+        this.name = name;
         this.role = "MENTEE";
     }
 }

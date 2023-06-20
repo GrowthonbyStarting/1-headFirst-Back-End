@@ -7,8 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Getter
-@Setter
+@Getter @Setter
 @NoArgsConstructor
 public class MentorInfo {
     @Id
@@ -16,20 +15,19 @@ public class MentorInfo {
     @JsonIgnore
     private Long id;
 
-    private Long cost;
-
     private String content;
 
-    private Boolean summary;
+    private int cost;
 
-    @JsonIgnore
-    @OneToOne(mappedBy = "mentorInfo")
+    private int view;
+
+    @OneToOne
     private User mentor;
 
-    public MentorInfo(Long cost, String content, Boolean summary, User mentor) {
-        this.cost = cost;
+    public MentorInfo(String content, int cost, int view, User mentor) {
         this.content = content;
-        this.summary = summary;
+        this.cost = cost;
+        this.view = view;
         this.mentor = mentor;
     }
 }

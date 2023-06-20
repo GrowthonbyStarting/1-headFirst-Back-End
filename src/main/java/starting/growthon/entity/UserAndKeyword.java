@@ -7,8 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Getter
-@Setter
+@Getter @Setter
 @NoArgsConstructor
 public class UserAndKeyword {
     @Id
@@ -17,11 +16,8 @@ public class UserAndKeyword {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    @JsonIgnore
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "keyword_id")
     private Keyword keyword;
 }
