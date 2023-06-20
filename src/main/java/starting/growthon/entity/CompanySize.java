@@ -1,24 +1,20 @@
 package starting.growthon.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Getter
-@Setter
+@Getter @Setter
 @NoArgsConstructor
-public class UserAndJob {
+public class CompanySize {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "company_size_id")
+    @JsonIgnore
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "job_id")
-    private Job job;
+    private String name;
 }
