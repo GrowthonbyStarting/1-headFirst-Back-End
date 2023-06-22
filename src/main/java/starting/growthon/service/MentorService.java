@@ -2,16 +2,15 @@ package starting.growthon.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import starting.growthon.dto.response.MentorInfoDto;
 import starting.growthon.entity.*;
-import starting.growthon.repository.CompanyRepository;
-import starting.growthon.repository.MentorInfoRepository;
-import starting.growthon.repository.SubJobRepository;
-import starting.growthon.repository.UserRepository;
+import starting.growthon.repository.*;
 import starting.growthon.util.UserUtil;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,16 +22,19 @@ public class MentorService {
     private final UserUtil userUtil;
     private final CompanyRepository companyRepository;
     private final SubJobRepository subJobRepository;
+    private final FollowRepository followRepository;
 
     public MentorService(MentorInfoRepository mentorInfoRepository, UserRepository userRepository,
                          UserUtil userUtil,
                          CompanyRepository companyRepository,
-                         SubJobRepository subJobRepository) {
+                         SubJobRepository subJobRepository,
+                         FollowRepository followRepository) {
         this.mentorInfoRepository = mentorInfoRepository;
         this.userRepository = userRepository;
         this.userUtil = userUtil;
         this.companyRepository = companyRepository;
         this.subJobRepository = subJobRepository;
+        this.followRepository = followRepository;
     }
 
     public MentorInfo changeRole() {
@@ -42,19 +44,37 @@ public class MentorService {
     }
 
     private MentorInfo createMentorInfo(User targetUser) {
-        if (mentorInfoRepository.findByMentorId(targetUser.getId()) == null) {
+        if (mentorInfoRepository.findByMentorId(targetUser.getId()).isEmpty()) {
             MentorInfo mentorInfo = new MentorInfo("", 0, 0, targetUser, null);
             return mentorInfoRepository.save(mentorInfo);
         }
-        return mentorInfoRepository.findByMentorId(targetUser.getId());
+        return mentorInfoRepository.findByMentorId(targetUser.getId()).get();
     }
 
-    public List<MentorInfo> getMentors() {
-        return userRepository.findAll()
-                .stream()
-                .filter(user -> user.getRole().equals("MENTOR"))
-                .map(mentor -> mentorInfoRepository.findByMentorId(mentor.getId()))
-                .collect(Collectors.toList());
+    public List<MentorInfoDto> getMentors() {
+        ArrayList<MentorInfoDto> allMentors = new ArrayList<>();
+        List<User> mentors = userRepository.findAll().stream()
+                .filter(user -> user.getRole().equals("MENTOR")).collect(Collectors.toList());
+        for (User mentor : mentors) {
+            createMentorInfoDtoUsingMentor(allMentors, mentor);
+        }
+        return allMentors;
+    }
+
+    private void createMentorInfoDtoUsingMentor(ArrayList<MentorInfoDto> allMentors, User mentor) {
+        var mentorInfo = mentorInfoRepository.findByMentorId(mentor.getId()).get();
+        var followers = followRepository.findAllByMentorId(mentor.getId());
+        allMentors.add(
+                MentorInfoDto.builder()
+                        .mentor(mentor)
+                        .content(mentorInfo.getContent())
+                        .cost(mentorInfo.getCost())
+                        .view(mentorInfo.getView())
+                        .followers(followers.size())
+                        .summary(mentorInfo.isSummary())
+                        .univ(mentorInfo.getUniv().getName())
+                        .build()
+        );
     }
 
     public List<MentorInfo> mentorSearch(String condition) {
@@ -74,7 +94,7 @@ public class MentorService {
         for (Company com : companies) {
             List<User> users = userRepository.findAllByCompanyId(com.getId());
             for (User user : users) {
-                MentorInfo mentorInfo = mentorInfoRepository.findByMentorId(user.getId());
+                MentorInfo mentorInfo = mentorInfoRepository.findByMentorId(user.getId()).get();
                 mentorInfos.add(mentorInfo);
             }
         }
@@ -91,8 +111,8 @@ public class MentorService {
         for (SubJob subJob : subJobList) {
             List<User> users = userRepository.findAllBySubjobId(subJob.getId());
             for (User user : users) {
-                MentorInfo mentorInfo = mentorInfoRepository.findByMentorId(user.getId());
-                if (mentorInfo != null) {
+                MentorInfo mentorInfo = mentorInfoRepository.findByMentorId(user.getId()).get();
+                if (mentorInfo == null) {
                     mentorInfos.add(mentorInfo);
                 }
             }

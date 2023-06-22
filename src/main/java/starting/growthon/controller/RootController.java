@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import starting.growthon.dto.response.MentorInfoDto;
 import starting.growthon.entity.MentorInfo;
 import starting.growthon.exception.ExceptionResponse;
 import starting.growthon.exception.NotLoggedInException;
@@ -31,7 +32,7 @@ public class RootController {
     }
 
     @GetMapping("/main")
-    public ResponseEntity<List<MentorInfo>> main() {
+    public ResponseEntity<List<MentorInfoDto>> main() {
         return ResponseEntity.ok(mentorService.getMentors());
     }
 

@@ -20,4 +20,9 @@ public class Follow {
 
     @ManyToOne
     private User mentee;
+
+    public Follow(User mentor, User mentee) {
+        this.mentor = mentor;
+        this.mentee = mentee;
+    }
 }
