@@ -10,7 +10,6 @@ import starting.growthon.util.UserUtil;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -61,6 +60,52 @@ public class MentorService {
         return allMentors;
     }
 
+    public List<MentorInfoDto> mentorSearch(String condition) {
+        // 아예 condition 값이 비어 있는 경우는 없다고 가정 (프론트에서 막아야 함)
+        List<MentorInfoDto> allMentors = new ArrayList<>();
+        allMentors.addAll(mentorFindByCompany(condition));
+        allMentors.addAll(mentorFindBySubjob(condition));
+        return new ArrayList<>(new HashSet<>(allMentors));
+    }
+
+    private List<MentorInfoDto> mentorFindByCompany(String company) {
+        List<Company> companies = companyRepository.findAllByNameContaining(company);
+
+        if (companies.size() == 0 || company.isEmpty())
+            return new ArrayList<>();
+
+        ArrayList<MentorInfoDto> mentorInfos = new ArrayList<>();
+
+        for (Company com : companies) {
+            List<User> companyMentors = userRepository.findAllByCompanyId(com.getId()).stream().filter(
+                    user -> user.getRole().equals("MENTOR")
+            ).toList();
+            for (User mentor : companyMentors) {
+                createMentorInfoDtoUsingMentor(mentorInfos, mentor);
+            }
+        }
+
+        return mentorInfos;
+    }
+
+    private List<MentorInfoDto> mentorFindBySubjob(String job) {
+        List<SubJob> subJobList = subJobRepository.findAllByNameContaining(job);
+
+        if (subJobList.size() == 0 || job.isEmpty())
+            return new ArrayList<>();
+
+        ArrayList<MentorInfoDto> mentorInfos = new ArrayList<>();
+        for (SubJob j : subJobList) {
+            List<User> subJobMentors = userRepository.findAllBySubjobId(j.getId()).stream().filter(
+                    user -> user.getRole().equals("MENTOR")
+            ).toList();
+            for (User mentor : subJobMentors) {
+                createMentorInfoDtoUsingMentor(mentorInfos, mentor);
+            }
+        }
+        return mentorInfos;
+    }
+
     private void createMentorInfoDtoUsingMentor(ArrayList<MentorInfoDto> allMentors, User mentor) {
         var mentorInfo = mentorInfoRepository.findByMentorId(mentor.getId()).get();
         var followers = followRepository.findAllByMentorId(mentor.getId());
@@ -75,48 +120,5 @@ public class MentorService {
                         .univ(mentorInfo.getUniv().getName())
                         .build()
         );
-    }
-
-    public List<MentorInfo> mentorSearch(String condition) {
-        // 아예 condition 값이 비어 있는 경우는 없다고 가정 (프론트에서 막아야 함)
-        List<MentorInfo> allMentors = mentorFindByCompany(condition);
-        allMentors.addAll(mentorFindBySubjob(condition));
-        return new ArrayList<>(new HashSet<>(allMentors));
-    }
-
-    private List<MentorInfo> mentorFindByCompany(String company) {
-        List<Company> companies = companyRepository.findAllByNameContaining(company);
-
-        if (companies.size() == 0 || company.isEmpty())
-            return new ArrayList<>();
-
-        List<MentorInfo> mentorInfos = new ArrayList<>();
-        for (Company com : companies) {
-            List<User> users = userRepository.findAllByCompanyId(com.getId());
-            for (User user : users) {
-                MentorInfo mentorInfo = mentorInfoRepository.findByMentorId(user.getId()).get();
-                mentorInfos.add(mentorInfo);
-            }
-        }
-        return mentorInfos;
-    }
-
-    private List<MentorInfo> mentorFindBySubjob(String job) {
-        List<SubJob> subJobList = subJobRepository.findAllByNameContaining(job);
-
-        if (subJobList.size() == 0 || job.isEmpty())
-            return new ArrayList<>();
-
-        List<MentorInfo> mentorInfos = new ArrayList<>();
-        for (SubJob subJob : subJobList) {
-            List<User> users = userRepository.findAllBySubjobId(subJob.getId());
-            for (User user : users) {
-                MentorInfo mentorInfo = mentorInfoRepository.findByMentorId(user.getId()).get();
-                if (mentorInfo == null) {
-                    mentorInfos.add(mentorInfo);
-                }
-            }
-        }
-        return mentorInfos;
     }
 }

@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import starting.growthon.dto.response.MentorInfoDto;
-import starting.growthon.entity.MentorInfo;
 import starting.growthon.exception.ExceptionResponse;
 import starting.growthon.exception.NotLoggedInException;
 import starting.growthon.service.MentorService;
@@ -37,7 +36,7 @@ public class RootController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<MentorInfo>> search(@RequestParam String condition) {
+    public ResponseEntity<List<MentorInfoDto>> search(@RequestParam String condition) {
         return ResponseEntity.ok(mentorService.mentorSearch(condition));
     }
 
