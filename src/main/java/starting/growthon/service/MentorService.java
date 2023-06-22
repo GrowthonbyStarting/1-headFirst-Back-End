@@ -1,12 +1,16 @@
 package starting.growthon.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import starting.growthon.dto.response.MentorInfoDto;
 import starting.growthon.entity.*;
 import starting.growthon.repository.*;
+import starting.growthon.util.S3Uploader;
 import starting.growthon.util.UserUtil;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -22,6 +26,12 @@ public class MentorService {
     private final CompanyRepository companyRepository;
     private final SubJobRepository subJobRepository;
     private final FollowRepository followRepository;
+
+    @Autowired
+    private S3Uploader s3Uploader;
+
+    @Autowired
+    private FileRepository fileRepository;
 
     public MentorService(MentorInfoRepository mentorInfoRepository, UserRepository userRepository,
                          UserUtil userUtil,
@@ -53,7 +63,7 @@ public class MentorService {
     public List<MentorInfoDto> getMentors() {
         ArrayList<MentorInfoDto> allMentors = new ArrayList<>();
         List<User> mentors = userRepository.findAll().stream()
-                .filter(user -> user.getRole().equals("MENTOR")).collect(Collectors.toList());
+                .filter(user -> user.getRole().equals("MENTOR")).toList();
         for (User mentor : mentors) {
             createMentorInfoDtoUsingMentor(allMentors, mentor);
         }
@@ -109,6 +119,11 @@ public class MentorService {
     private void createMentorInfoDtoUsingMentor(ArrayList<MentorInfoDto> allMentors, User mentor) {
         var mentorInfo = mentorInfoRepository.findByMentorId(mentor.getId()).get();
         var followers = followRepository.findAllByMentorId(mentor.getId());
+        File img = fileRepository.findByTypeAndOwnerId("PROFILE", mentor.getId());
+        String imgUrl = null;
+        if (img != null) {
+            imgUrl = img.getUrl();
+        }
         allMentors.add(
                 MentorInfoDto.builder()
                         .mentor(mentor)
@@ -118,6 +133,7 @@ public class MentorService {
                         .followers(followers.size())
                         .summary(mentorInfo.isSummary())
                         .univ(mentorInfo.getUniv().getName())
+                        .profile(imgUrl)
                         .build()
         );
     }

@@ -11,12 +11,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import starting.growthon.dto.LoginDto;
 import starting.growthon.dto.TokenDto;
-import starting.growthon.entity.MentorInfo;
 import starting.growthon.entity.User;
 import starting.growthon.jwt.JwtFilter;
 import starting.growthon.jwt.TokenProvider;
 import starting.growthon.repository.*;
-import starting.growthon.util.UserUtil;
 
 import java.util.Collections;
 

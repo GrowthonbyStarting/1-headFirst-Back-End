@@ -17,4 +17,5 @@ public class MentorInfoDto {
     private int followers;
     private boolean summary;
     private String univ;
+    private String profile;
 }
