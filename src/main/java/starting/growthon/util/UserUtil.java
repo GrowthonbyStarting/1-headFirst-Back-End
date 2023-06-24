@@ -17,8 +17,8 @@ public class UserUtil {
 
     public User getLoggedInUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String name = authentication.getName();
-        return userRepository.findByName(name).orElseThrow(
+        String email = authentication.getName();
+        return userRepository.findByEmail(email).orElseThrow(
                 () -> new NotLoggedInException("로그인되지 않았습니다.")
         );
     }
