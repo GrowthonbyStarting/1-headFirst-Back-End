@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import starting.growthon.dto.response.FileDto;
 import starting.growthon.entity.File;
 import starting.growthon.repository.FileRepository;
+import starting.growthon.repository.MentorInfoRepository;
 import starting.growthon.util.S3Uploader;
 import starting.growthon.util.UserUtil;
 
@@ -21,6 +22,9 @@ public class FileService {
 
     @Autowired
     private FileRepository fileRepository;
+
+    @Autowired
+    private MentorInfoRepository mentorInfoRepository;
 
     @Autowired
     private UserUtil userUtil;
@@ -53,6 +57,7 @@ public class FileService {
             String storedFileName = s3Uploader.outerUpload(file, "mentor-resume");
             saveFileInfo(resume, storedFileName, "RESUME");
             fileRepository.save(resume);
+            mentorInfoRepository.findByMentorId(userUtil.getLoggedInUser().getId()).setVerified(true);
             return new FileDto(userUtil.getLoggedInUser().getName(), storedFileName, "RESUME");
         }
         return null;
