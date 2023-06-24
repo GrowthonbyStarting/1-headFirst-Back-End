@@ -10,6 +10,7 @@ import starting.growthon.repository.*;
 import starting.growthon.util.UserUtil;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -83,8 +84,10 @@ public class MentorService {
         List<MentorInfoResponseDto> allMentors = new ArrayList<>();
         allMentors.addAll(mentorFindByCompany(condition));
         allMentors.addAll(mentorFindBySubjob(condition));
+        allMentors.addAll(mentorFindByNickname(condition));
         return new ArrayList<>(new HashSet<>(allMentors));
     }
+
 
     private List<MentorInfoResponseDto> mentorFindByCompany(String company) {
         List<Company> companies = companyRepository.findAllByNameContaining(company);
@@ -123,6 +126,22 @@ public class MentorService {
                 createMentorInfoDtoUsingMentor(mentorInfos, mentor);
             }
         }
+        return mentorInfos;
+    }
+
+    private List<MentorInfoResponseDto> mentorFindByNickname(String condition) {
+        List<User> mentors = userRepository.findAllByNicknameContaining(condition).stream().filter(
+                user -> user.getRole().equals("MENTOR")
+        ).toList();
+
+        if (mentors.size() == 0 || condition.isEmpty())
+            return new ArrayList<>();
+
+        ArrayList<MentorInfoResponseDto> mentorInfos = new ArrayList<>();
+        for (User mentor : mentors) {
+            createMentorInfoDtoUsingMentor(mentorInfos, mentor);
+        }
+
         return mentorInfos;
     }
 
