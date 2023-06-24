@@ -25,26 +25,45 @@ public class FileService {
     @Autowired
     private UserUtil userUtil;
 
+    // 모든 파일 사이즈 용량 제한은 5MB
     public FileDto profileUpload(MultipartFile file, File image) throws IOException {
         checkIsMentor();
         if (!file.isEmpty()) {
-            deleteProfileImageIfExisted(userUtil.getLoggedInUser().getId());
+            deleteFileIfExisted("PROFILE", userUtil.getLoggedInUser().getId());
             String storedFileName = s3Uploader.outerUpload(file, "profiles");
-            image.setUrl(storedFileName);
-            image.setOwner(userUtil.getLoggedInUser());
-            image.setType("PROFILE");
+
+            saveFileInfo(image, storedFileName, "PROFILE");
+
             fileRepository.save(image);
             return new FileDto(userUtil.getLoggedInUser().getName(), storedFileName, "PROFILE");
         }
         return null;
     }
 
-    private void deleteProfileImageIfExisted(Long mentorId) {
-        File img = fileRepository.findByTypeAndOwnerId("PROFILE", mentorId);
-        if (img != null) {
-            String fileUrl = img.getUrl().substring(55);
+    private void saveFileInfo(File file, String url, String type) {
+        file.setUrl(url);
+        file.setOwner(userUtil.getLoggedInUser());
+        file.setType(type);
+    }
+
+    public FileDto mentorResumeUpload(MultipartFile file, File resume) throws IOException {
+        checkIsMentor();
+        if (!file.isEmpty()) {
+            deleteFileIfExisted("RESUME", userUtil.getLoggedInUser().getId());
+            String storedFileName = s3Uploader.outerUpload(file, "mentor-resume");
+            saveFileInfo(resume, storedFileName, "RESUME");
+            fileRepository.save(resume);
+            return new FileDto(userUtil.getLoggedInUser().getName(), storedFileName, "RESUME");
+        }
+        return null;
+    }
+
+    private void deleteFileIfExisted(String type, Long mentorId) {
+        File file = fileRepository.findByTypeAndOwnerId(type, mentorId);
+        if (file != null) {
+            String fileUrl = file.getUrl().substring(55);
             s3Uploader.deleteS3ObjectIfExisted(fileUrl);
-            fileRepository.deleteById(img.getId());
+            fileRepository.deleteById(file.getId());
         }
     }
 

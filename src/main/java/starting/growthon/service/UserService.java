@@ -36,11 +36,11 @@ public class UserService {
 
         // 고유 식별자로 유저를 판별한 다음 유저가 없으면 생성해줘야 함
         User user = userRepository.findByUuid(loginDto.getUuid()).orElseGet(
-                () -> createNewUser(loginDto.getUuid(), loginDto.getName()));
+                () -> createNewUser(loginDto.getUuid(), loginDto.getEmail()));
 
         SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority("ROLE_USER");
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(loginDto.getName(),null,
+        Authentication authentication = new UsernamePasswordAuthenticationToken(loginDto.getEmail(),null,
                 Collections.singleton(simpleGrantedAuthority));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -53,7 +53,7 @@ public class UserService {
     }
 
     // 유저 신규 생성
-    private User createNewUser(Long uuid, String name) {
-        return userRepository.save(new User(uuid, name));
+    private User createNewUser(Long uuid, String email) {
+        return userRepository.save(new User(uuid, email));
     }
 }

@@ -42,6 +42,17 @@ public class MentorController {
         }
     }
 
+    @PostMapping(value = "/resume", consumes =
+            MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> resumeUpload(@RequestParam(value = "resume")
+                                           MultipartFile file, File resume) throws Exception {
+        try {
+            return ResponseEntity.ok(fileService.mentorResumeUpload(file, resume));
+        } catch (IllegalStateException e) {
+            return errorMessage(e);
+        }
+    }
+
     private static ResponseEntity<ExceptionResponse> errorMessage(RuntimeException e) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionResponse);
