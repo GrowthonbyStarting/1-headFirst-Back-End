@@ -7,7 +7,6 @@ import starting.growthon.dto.MentorInfoRequestDto;
 import starting.growthon.dto.response.MentorInfoResponseDto;
 import starting.growthon.entity.*;
 import starting.growthon.repository.*;
-import starting.growthon.util.S3Uploader;
 import starting.growthon.util.UserUtil;
 
 import java.util.ArrayList;
@@ -27,9 +26,6 @@ public class MentorService {
     private final FollowRepository followRepository;
 
     private final YearRepository yearRepository;
-
-    @Autowired
-    private S3Uploader s3Uploader;
 
     @Autowired
     private FileRepository fileRepository;
@@ -74,7 +70,8 @@ public class MentorService {
     public List<MentorInfoResponseDto> getMentors() {
         ArrayList<MentorInfoResponseDto> allMentors = new ArrayList<>();
         List<User> mentors = userRepository.findAll().stream()
-                .filter(user -> user.getRole().equals("MENTOR")).toList();
+                .filter(user -> user.getRole().equals("MENTOR") && mentorInfoRepository
+                        .findByMentorId(user.getId()).isVerified()).toList();
         for (User mentor : mentors) {
             createMentorInfoDtoUsingMentor(allMentors, mentor);
         }
@@ -99,7 +96,8 @@ public class MentorService {
 
         for (Company com : companies) {
             List<User> companyMentors = userRepository.findAllByCompanyId(com.getId()).stream().filter(
-                    user -> user.getRole().equals("MENTOR")
+                    user -> user.getRole().equals("MENTOR") && mentorInfoRepository
+                            .findByMentorId(user.getId()).isVerified()
             ).toList();
             for (User mentor : companyMentors) {
                 createMentorInfoDtoUsingMentor(mentorInfos, mentor);
@@ -118,7 +116,8 @@ public class MentorService {
         ArrayList<MentorInfoResponseDto> mentorInfos = new ArrayList<>();
         for (SubJob j : subJobList) {
             List<User> subJobMentors = userRepository.findAllBySubjobId(j.getId()).stream().filter(
-                    user -> user.getRole().equals("MENTOR")
+                    user -> user.getRole().equals("MENTOR") && mentorInfoRepository
+                            .findByMentorId(user.getId()).isVerified()
             ).toList();
             for (User mentor : subJobMentors) {
                 createMentorInfoDtoUsingMentor(mentorInfos, mentor);
