@@ -8,11 +8,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class LoginDto {
-    private String name;
+    private String email;
     private Long uuid;
-
-    public LoginDto(String name, Long uuid) {
-        this.name = name;
-        this.uuid = uuid;
-    }
 }

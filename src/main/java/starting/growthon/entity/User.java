@@ -35,9 +35,9 @@ public class User {
     @JoinColumn(name = "sub_job_id")
     private SubJob subjob;
 
-    public User(Long uuid, String name) {
+    public User(Long uuid, String email) {
         this.uuid = uuid;
-        this.name = name;
+        this.email = email;
         this.role = "MENTEE";
     }
 }
