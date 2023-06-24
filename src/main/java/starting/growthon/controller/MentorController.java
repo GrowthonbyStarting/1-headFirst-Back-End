@@ -4,14 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import starting.growthon.dto.MentorInfoRequestDto;
 import starting.growthon.entity.File;
 import starting.growthon.exception.ExceptionResponse;
 import starting.growthon.service.FileService;
+import starting.growthon.service.MentorService;
 
 @RestController
 @RequestMapping("/mentor")
@@ -20,12 +19,17 @@ public class MentorController {
     @Autowired
     private FileService fileService;
 
-    /*
+    @Autowired
+    private MentorService mentorService;
+
     @PostMapping("/info")
-    public ResponseEntity<?> infoUpload() {
-        return ResponseEntity.ok(mentorService.uploadInfo());
+    public ResponseEntity<?> infoUpload(@RequestBody MentorInfoRequestDto mentorInfoRequestDto) {
+        try {
+            return ResponseEntity.ok(mentorService.infoUpload(mentorInfoRequestDto));
+        } catch (IllegalStateException e) {
+            return errorMessage(e);
+        }
     }
-     */
 
     @PostMapping(value = "/profile-image", consumes =
             MediaType.MULTIPART_FORM_DATA_VALUE)

@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import starting.growthon.dto.response.MentorInfoDto;
+import starting.growthon.dto.response.MentorInfoResponseDto;
 import starting.growthon.exception.ExceptionResponse;
 import starting.growthon.exception.NotLoggedInException;
 import starting.growthon.service.MentorService;
@@ -16,12 +16,9 @@ import java.util.List;
 
 @RestController("/")
 public class RootController {
-
-    private final UserService userService;
     private final MentorService mentorService;
 
-    public RootController(UserService userService, MentorService mentorService) {
-        this.userService = userService;
+    public RootController(MentorService mentorService) {
         this.mentorService = mentorService;
     }
 
@@ -31,12 +28,12 @@ public class RootController {
     }
 
     @GetMapping("/main")
-    public ResponseEntity<List<MentorInfoDto>> main() {
+    public ResponseEntity<List<MentorInfoResponseDto>> main() {
         return ResponseEntity.ok(mentorService.getMentors());
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<MentorInfoDto>> search(@RequestParam String condition) {
+    public ResponseEntity<List<MentorInfoResponseDto>> search(@RequestParam String condition) {
         return ResponseEntity.ok(mentorService.mentorSearch(condition));
     }
 

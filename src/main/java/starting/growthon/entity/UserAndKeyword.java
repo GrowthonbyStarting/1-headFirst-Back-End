@@ -20,4 +20,9 @@ public class UserAndKeyword {
 
     @ManyToOne
     private Keyword keyword;
+
+    public UserAndKeyword(User user, Keyword keyword) {
+        this.user = user;
+        this.keyword = keyword;
+    }
 }

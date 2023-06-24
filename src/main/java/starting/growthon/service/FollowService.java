@@ -48,8 +48,8 @@ public class FollowService {
     }
 
     private User getMentor(Long mentorId) {
-        return mentorInfoRepository.findByMentorId(mentorId).orElseThrow(
-                () -> new TargetNotFoundException("해당 멘토가 없습니다.")
-        ).getMentor();
+        if (mentorInfoRepository.findByMentorId(mentorId) != null)
+            return mentorInfoRepository.findByMentorId(mentorId).getMentor();
+        throw new TargetNotFoundException("해당 멘토가 없습니다.");
     }
 }

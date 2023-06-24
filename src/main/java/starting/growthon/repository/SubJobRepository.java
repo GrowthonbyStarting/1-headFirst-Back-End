@@ -7,4 +7,7 @@ import java.util.List;
 
 public interface SubJobRepository extends JpaRepository<SubJob, Long> {
     List<SubJob> findAllByNameContaining(String name);
+
+    List<SubJob> findAllByJobId(Long jobId);
+    SubJob findByName(String name);
 }

@@ -15,15 +15,17 @@ public class MentorInfo {
     @JsonIgnore
     private Long id;
 
+    private String title;
+
     private String content;
 
     private int cost;
 
     private int view;
 
-    private boolean summary;
+    private boolean verified;
 
-    private int count;
+    private int count; // 피드백 횟수 (임시)
     
     @OneToOne
     private User mentor;

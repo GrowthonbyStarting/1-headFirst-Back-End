@@ -9,10 +9,10 @@ import lombok.Setter;
 @Entity
 @Getter @Setter
 @NoArgsConstructor
-public class CompanySize {
+public class CompanyType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "company_size_id")
+    @Column(name = "type_id")
     @JsonIgnore
     private Long id;
 

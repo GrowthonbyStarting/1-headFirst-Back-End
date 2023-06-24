@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface CompanyRepository extends JpaRepository<Company, Long> {
     List<Company> findAllByNameContaining(String name);
+    Company findByName(String name);
 }

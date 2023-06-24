@@ -23,8 +23,10 @@ public class User {
 
     private String role;
 
-    private int year;
-
+    @ManyToOne
+    @JoinColumn(name = "year_id")
+    private Year year;
+    
     @ManyToOne
     @JoinColumn(name = "company_id")
     private Company company;
