@@ -10,7 +10,6 @@ import starting.growthon.repository.*;
 import starting.growthon.util.UserUtil;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -62,7 +61,7 @@ public class MentorService {
 
     private MentorInfo createMentorInfo(User targetUser) {
         if (mentorInfoRepository.findByMentorId(targetUser.getId()) == null) {
-            MentorInfo mentorInfo = new MentorInfo("", 0, 0, targetUser, null);
+            MentorInfo mentorInfo = new MentorInfo("", 0, 0, 0, targetUser);
             return mentorInfoRepository.save(mentorInfo);
         }
         return mentorInfoRepository.findByMentorId(targetUser.getId());
@@ -168,8 +167,6 @@ public class MentorService {
                                 .stream().map(userAndKeyword -> {
                                     return userAndKeyword.getKeyword().getName();
                                 }).collect(Collectors.toList()))
-                        // 이것이 바로 연속 의존의 문제점..
-                        .univ(mentorInfo.getUniv() == null ? null : mentorInfo.getUniv().getName())
                         .profile(imgUrl)
                         .build()
         );
@@ -209,7 +206,6 @@ public class MentorService {
                 .profile(imgUrl)
                 .followers(followers.size())
                 .verified(mentorInfo.isVerified())
-                .univ(mentorInfo.getUniv() == null ? null : mentorInfo.getUniv().getName())
                 .keywords(userAndKeywordRepository.findAllByUserId(mentor.getId())
                         .stream().map(userAndKeyword -> {
                             return userAndKeyword.getKeyword().getName();

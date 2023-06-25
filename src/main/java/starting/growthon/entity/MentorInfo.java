@@ -30,15 +30,11 @@ public class MentorInfo {
     @OneToOne
     private User mentor;
 
-    @ManyToOne
-    @JoinColumn(name = "univ_id")
-    private Univ univ;
-
-    public MentorInfo(String content, int cost, int view, User mentor, Univ univ) {
+    public MentorInfo(String content, int cost, int count, int view, User mentor) {
         this.content = content;
         this.cost = cost;
+        this.count = count;
         this.view = view;
         this.mentor = mentor;
-        this.univ = univ;
     }
 }

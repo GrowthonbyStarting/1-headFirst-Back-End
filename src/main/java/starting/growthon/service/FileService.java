@@ -39,7 +39,7 @@ public class FileService {
             saveFileInfo(image, storedFileName, "PROFILE");
 
             fileRepository.save(image);
-            return new FileDto(userUtil.getLoggedInUser().getName(), storedFileName, "PROFILE");
+            return new FileDto(userUtil.getLoggedInUser().getUuid(), storedFileName, "PROFILE");
         }
         return null;
     }
@@ -58,7 +58,7 @@ public class FileService {
             saveFileInfo(resume, storedFileName, "RESUME");
             fileRepository.save(resume);
             mentorInfoRepository.findByMentorId(userUtil.getLoggedInUser().getId()).setVerified(true);
-            return new FileDto(userUtil.getLoggedInUser().getName(), storedFileName, "RESUME");
+            return new FileDto(userUtil.getLoggedInUser().getUuid(), storedFileName, "RESUME");
         }
         return null;
     }

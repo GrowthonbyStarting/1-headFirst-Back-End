@@ -18,11 +18,5 @@ public class MenteeInfo {
     private int grade;
 
     @ManyToOne
-    private Univ univ;
-
-    @ManyToOne
-    private Major major;
-
-    @ManyToOne
     private User mentee;
 }

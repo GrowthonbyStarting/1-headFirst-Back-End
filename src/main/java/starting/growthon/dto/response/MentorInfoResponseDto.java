@@ -16,9 +16,9 @@ public class MentorInfoResponseDto {
     private String content;
     private int cost;
     private int view;
+    private int count;
     private int followers;
     private boolean verified;
-    private String univ;
     private String profile;
     private List<String> keywords;
 }
