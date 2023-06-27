@@ -12,7 +12,6 @@ import starting.growthon.util.UserUtil;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -30,17 +29,13 @@ public class MentorService {
     @Autowired
     private FileRepository fileRepository;
     private final JobRepository jobRepository;
-    private final KeywordRepository keywordRepository;
-    private final UserAndKeywordRepository userAndKeywordRepository;
 
     public MentorService(MentorInfoRepository mentorInfoRepository, UserRepository userRepository,
                          UserUtil userUtil,
                          CompanyRepository companyRepository,
                          SubJobRepository subJobRepository,
                          FollowRepository followRepository, YearRepository yearRepository,
-                         JobRepository jobRepository,
-                         KeywordRepository keywordRepository,
-                         UserAndKeywordRepository userAndKeywordRepository) {
+                         JobRepository jobRepository) {
         this.mentorInfoRepository = mentorInfoRepository;
         this.userRepository = userRepository;
         this.userUtil = userUtil;
@@ -49,8 +44,6 @@ public class MentorService {
         this.followRepository = followRepository;
         this.yearRepository = yearRepository;
         this.jobRepository = jobRepository;
-        this.keywordRepository = keywordRepository;
-        this.userAndKeywordRepository = userAndKeywordRepository;
     }
 
     public MentorInfo changeRole() {
@@ -158,15 +151,19 @@ public class MentorService {
         allMentors.add(
                 MentorInfoResponseDto.builder()
                         .mentor(mentor)
-                        .content(mentorInfo.getContent())
+                        .title(mentorInfo.getTitle())
+                        .introduce(mentorInfo.getIntroduce())
+                        .possibles(mentorInfo.getPossibles())
+                        .concept(mentorInfo.getConcept())
+                        .target(mentorInfo.getTarget())
+                        .prepare(mentorInfo.getPrepare())
+                        .curriculum(mentorInfo.getCurriculum())
+                        .rule(mentorInfo.getRule())
+                        .time(mentorInfo.getTime())
                         .cost(mentorInfo.getCost())
                         .view(mentorInfo.getView())
                         .followers(followers.size())
                         .verified(mentorInfo.isVerified())
-                        .keywords(userAndKeywordRepository.findAllByUserId(mentor.getId())
-                                .stream().map(userAndKeyword -> {
-                                    return userAndKeyword.getKeyword().getName();
-                                }).collect(Collectors.toList()))
                         .profile(imgUrl)
                         .build()
         );
@@ -186,11 +183,16 @@ public class MentorService {
 
         setJobAndSubJob(dto, mentor);
 
-        saveKeywords(dto.getKeywords(), mentor);
-
-        mentorInfo.setContent(dto.getContent());
         mentorInfo.setTitle(dto.getTitle());
-
+        mentorInfo.setIntroduce(dto.getIntroduce());
+        mentorInfo.setPossibles(dto.getPossibles());
+        mentorInfo.setConcept(dto.getConcept());
+        mentorInfo.setTarget(dto.getTarget());
+        mentorInfo.setPrepare(dto.getPrepare());
+        mentorInfo.setCurriculum(dto.getCurriculum());
+        mentorInfo.setRule(dto.getRule());
+        mentorInfo.setTime(dto.getTime());
+        mentorInfo.setCost(dto.getCost());
         File img = fileRepository.findByTypeAndOwnerId("PROFILE", mentor.getId());
         String imgUrl = null;
         if (img != null) {
@@ -201,25 +203,21 @@ public class MentorService {
 
         return MentorInfoResponseDto.builder()
                 .mentor(mentor)
-                .content(dto.getContent())
+                .title(dto.getTitle())
+                .introduce(dto.getIntroduce())
+                .possibles(dto.getPossibles())
+                .concept(dto.getConcept())
+                .target(dto.getTarget())
+                .prepare(dto.getPrepare())
+                .curriculum(dto.getCurriculum())
+                .rule(dto.getRule())
+                .time(dto.getTime())
                 .cost(mentorInfo.getCost())
                 .profile(imgUrl)
                 .followers(followers.size())
                 .verified(mentorInfo.isVerified())
-                .keywords(userAndKeywordRepository.findAllByUserId(mentor.getId())
-                        .stream().map(userAndKeyword -> {
-                            return userAndKeyword.getKeyword().getName();
-                        }).collect(Collectors.toList()))
                 .view(mentorInfo.getView())
                 .build();
-    }
-
-    private void saveKeywords(List<String> keywords, User mentor) {
-        keywords.forEach(keyword -> {
-            Keyword validKeyword = keywordRepository.findByName(keyword);
-            if (validKeyword != null)
-                userAndKeywordRepository.save(new UserAndKeyword(mentor, validKeyword));
-        });
     }
 
     private void checkIsMentor(User mentor) {
