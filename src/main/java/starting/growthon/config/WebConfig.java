@@ -21,5 +21,13 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedOrigins(corsProperties.getOrigins().toArray(new String[0]))
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
                 .allowedHeaders("*");
+        registry.addMapping("/auth")
+                .allowedOrigins(corsProperties.getOrigins().toArray(new String[0]))
+                .allowedMethods("GET", "POST", "PUT", "DELETE")
+                .allowedHeaders("*");
+        registry.addMapping("/mentor")
+                .allowedOrigins(corsProperties.getOrigins().toArray(new String[0]))
+                .allowedMethods("GET", "POST", "PUT", "DELETE")
+                .allowedHeaders("*");
     }
 }
