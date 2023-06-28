@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import starting.growthon.dto.MentorInfoRequestDto;
+import starting.growthon.dto.ScheduleDto;
 import starting.growthon.dto.response.MentorInfoResponseDto;
 import starting.growthon.entity.*;
 import starting.growthon.repository.*;
@@ -26,6 +27,8 @@ public class MentorService {
 
     private final YearRepository yearRepository;
 
+    private final MentorAndScheduleRepository mentorAndScheduleRepository;
+    private final ScheduleRepository scheduleRepository;
     @Autowired
     private FileRepository fileRepository;
     private final JobRepository jobRepository;
@@ -35,7 +38,7 @@ public class MentorService {
                          CompanyRepository companyRepository,
                          SubJobRepository subJobRepository,
                          FollowRepository followRepository, YearRepository yearRepository,
-                         JobRepository jobRepository) {
+                         MentorAndScheduleRepository mentorAndScheduleRepository, ScheduleRepository scheduleRepository, JobRepository jobRepository) {
         this.mentorInfoRepository = mentorInfoRepository;
         this.userRepository = userRepository;
         this.userUtil = userUtil;
@@ -43,6 +46,8 @@ public class MentorService {
         this.subJobRepository = subJobRepository;
         this.followRepository = followRepository;
         this.yearRepository = yearRepository;
+        this.mentorAndScheduleRepository = mentorAndScheduleRepository;
+        this.scheduleRepository = scheduleRepository;
         this.jobRepository = jobRepository;
     }
 
@@ -143,6 +148,9 @@ public class MentorService {
             mentorInfo = mentorInfoRepository.findByMentorId(mentor.getId());
 
         List<Follow> followers = followRepository.findAllByMentorId(mentor.getId());
+        List<Schedule> schedules = mentorAndScheduleRepository.findAllByMentorId(mentorInfo.getId())
+                .stream().map(MentorAndSchedule::getSchedule).toList();
+
         File img = fileRepository.findByTypeAndOwnerId("PROFILE", mentor.getId());
         String imgUrl = null;
         if (img != null) {
@@ -165,6 +173,7 @@ public class MentorService {
                         .followers(followers.size())
                         .verified(mentorInfo.isVerified())
                         .profile(imgUrl)
+                        .schedules(extractSchedule(schedules))
                         .build()
         );
     }
@@ -193,6 +202,15 @@ public class MentorService {
         mentorInfo.setRule(dto.getRule());
         mentorInfo.setTime(dto.getTime());
         mentorInfo.setCost(dto.getCost());
+        for (ScheduleDto schedule : dto.getSchedules()) {
+            for (String time : schedule.getTime()) {
+                if (scheduleRepository.findByDayAndTime(schedule.getDay(), time) == null) {
+                    Schedule newSchedule = scheduleRepository.save(new Schedule(schedule.getDay(), time));
+                    mentorAndScheduleRepository.save(new MentorAndSchedule(newSchedule, mentorInfo));
+                }
+            }
+        }
+
         File img = fileRepository.findByTypeAndOwnerId("PROFILE", mentor.getId());
         String imgUrl = null;
         if (img != null) {
@@ -200,6 +218,8 @@ public class MentorService {
         }
 
         List<Follow> followers = followRepository.findAllByMentorId(mentor.getId());
+        List<Schedule> schedules = mentorAndScheduleRepository.findAllByMentorId(mentorInfo.getId())
+                .stream().map(MentorAndSchedule::getSchedule).toList();
 
         return MentorInfoResponseDto.builder()
                 .mentor(mentor)
@@ -214,11 +234,35 @@ public class MentorService {
                 .time(dto.getTime())
                 .cost(mentorInfo.getCost())
                 .profile(imgUrl)
+                .schedules(extractSchedule(schedules))
                 .followers(followers.size())
                 .verified(mentorInfo.isVerified())
                 .view(mentorInfo.getView())
                 .build();
     }
+
+    private List<ScheduleDto> extractSchedule(List<Schedule> schedules) {
+        List<ScheduleDto> result = new ArrayList<>();
+
+        for (Schedule schedule : schedules) {
+            boolean found = false;
+            for (ScheduleDto r : result) {
+                if (r.getDay().equals(schedule.getDay())) {
+                    r.getTime().add(schedule.getTime());
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                List<String> newTime = new ArrayList<>();
+                newTime.add(schedule.getTime());
+                result.add(new ScheduleDto(schedule.getDay(), newTime));
+            }
+        }
+
+        return result;
+    }
+
 
     private void checkIsMentor(User mentor) {
         MentorInfo mentorInfo = mentorInfoRepository.findByMentorId(mentor.getId());

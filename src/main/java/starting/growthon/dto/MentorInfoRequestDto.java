@@ -3,6 +3,8 @@ package starting.growthon.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class MentorInfoRequestDto {
@@ -29,4 +31,5 @@ public class MentorInfoRequestDto {
     private int cost; // 1회 진행 가격
 
     // 멘토링 진행 시간에 대한 내용도 담아야 함
+    private List<ScheduleDto> schedules;
 }

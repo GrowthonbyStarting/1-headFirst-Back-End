@@ -12,6 +12,7 @@ import lombok.Setter;
 public class MentorInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "mentor_info_id")
     @JsonIgnore
     private Long id;
 
@@ -31,6 +32,7 @@ public class MentorInfo {
 
     private String rule; // 진행 수단
     private String time; // 1회 진행 시간
+
     // 멘토링 진행 시간에 대한 내용도 담아야 함
     private int cost;
 
