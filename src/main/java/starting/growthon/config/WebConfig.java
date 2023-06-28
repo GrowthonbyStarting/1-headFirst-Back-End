@@ -46,5 +46,10 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedHeaders("*")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS" , "PATCH");
                 // .allowCredentials(true);
+
+        registry.addMapping("/mentor/**")
+                .allowedOriginPatterns("*") // 안에 해당 주소를 넣어도 됨
+                .allowedHeaders("*")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS" , "PATCH");
     }
 }
