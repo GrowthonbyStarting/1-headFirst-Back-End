@@ -19,15 +19,15 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins(corsProperties.getOrigins().toArray(new String[0]))
-                .allowedMethods("GET", "POST", "PUT", "DELETE")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*");
         registry.addMapping("/auth/**")
                 .allowedOrigins(corsProperties.getOrigins().toArray(new String[0]))
-                .allowedMethods("GET", "POST", "PUT", "DELETE")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*");
         registry.addMapping("/mentor/**")
                 .allowedOrigins(corsProperties.getOrigins().toArray(new String[0]))
-                .allowedMethods("GET", "POST", "PUT", "DELETE")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*");
     }
 }
