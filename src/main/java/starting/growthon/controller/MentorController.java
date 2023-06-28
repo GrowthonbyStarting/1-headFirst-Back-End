@@ -13,6 +13,7 @@ import starting.growthon.service.FileService;
 import starting.growthon.service.MentorService;
 
 @RestController
+@CrossOrigin(originPatterns = {"http://localhost:3000", "http://43.201.17.248:3000"})
 @RequestMapping("/mentor")
 public class MentorController {
 
