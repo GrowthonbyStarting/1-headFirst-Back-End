@@ -22,4 +22,9 @@ public class MentorAndBadge {
     @ManyToOne
     @JoinColumn(name = "badge_id")
     private Badge badge;
+
+    public MentorAndBadge(User mentor, Badge badge) {
+        this.mentor = mentor;
+        this.badge = badge;
+    }
 }

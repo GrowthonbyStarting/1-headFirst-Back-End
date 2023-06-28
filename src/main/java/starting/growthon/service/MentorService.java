@@ -13,6 +13,7 @@ import starting.growthon.util.UserUtil;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -33,12 +34,17 @@ public class MentorService {
     private FileRepository fileRepository;
     private final JobRepository jobRepository;
 
+    private final MentorAndBadgeRepository mentorAndBadgeRepository;
+    private final BadgeRepository badgeRepository;
+
     public MentorService(MentorInfoRepository mentorInfoRepository, UserRepository userRepository,
                          UserUtil userUtil,
                          CompanyRepository companyRepository,
                          SubJobRepository subJobRepository,
                          FollowRepository followRepository, YearRepository yearRepository,
-                         MentorAndScheduleRepository mentorAndScheduleRepository, ScheduleRepository scheduleRepository, JobRepository jobRepository) {
+                         MentorAndScheduleRepository mentorAndScheduleRepository,
+                         ScheduleRepository scheduleRepository, JobRepository jobRepository,
+                         MentorAndBadgeRepository mentorAndBadgeRepository, BadgeRepository badgeRepository) {
         this.mentorInfoRepository = mentorInfoRepository;
         this.userRepository = userRepository;
         this.userUtil = userUtil;
@@ -49,11 +55,14 @@ public class MentorService {
         this.mentorAndScheduleRepository = mentorAndScheduleRepository;
         this.scheduleRepository = scheduleRepository;
         this.jobRepository = jobRepository;
+        this.mentorAndBadgeRepository = mentorAndBadgeRepository;
+        this.badgeRepository = badgeRepository;
     }
 
     public MentorInfo changeRole() {
         User targetUser = userUtil.getLoggedInUser();
         targetUser.setRole("MENTOR");
+        giveNewbieBadge(targetUser);
         return createMentorInfo(targetUser);
     }
 
@@ -174,6 +183,9 @@ public class MentorService {
                         .verified(mentorInfo.isVerified())
                         .profile(imgUrl)
                         .schedules(extractSchedule(schedules))
+                        .badges(mentorAndBadgeRepository.findAllByMentorId(mentor.getId()).stream().map(
+                                mentorAndBadge -> mentorAndBadge.getBadge().getName()
+                        ).collect(Collectors.toList()))
                         .build()
         );
     }
@@ -202,6 +214,7 @@ public class MentorService {
         mentorInfo.setRule(dto.getRule());
         mentorInfo.setTime(dto.getTime());
         mentorInfo.setCost(dto.getCost());
+
         for (ScheduleDto schedule : dto.getSchedules()) {
             for (String time : schedule.getTime()) {
                 if (scheduleRepository.findByDayAndTime(schedule.getDay(), time) == null) {
@@ -238,6 +251,9 @@ public class MentorService {
                 .followers(followers.size())
                 .verified(mentorInfo.isVerified())
                 .view(mentorInfo.getView())
+                .badges(mentorAndBadgeRepository.findAllByMentorId(mentor.getId()).stream().map(
+                        mentorAndBadge -> mentorAndBadge.getBadge().getName()
+                ).collect(Collectors.toList()))
                 .build();
     }
 
@@ -276,5 +292,11 @@ public class MentorService {
         List<SubJob> possibleSubjob = subJobRepository.findAllByJobId(job.getId());
         if (possibleSubjob.contains(subJob))
             mentor.setSubjob(subJobRepository.findByName(dto.getSubjob()));
+    }
+
+    private void giveNewbieBadge(User mentor) {
+        List<MentorAndBadge> mentorBadges = mentorAndBadgeRepository.findAllByMentorId(mentor.getId());
+        if (mentorBadges.isEmpty())
+            mentorAndBadgeRepository.save(new MentorAndBadge(mentor, badgeRepository.findByName("신규")));
     }
 }

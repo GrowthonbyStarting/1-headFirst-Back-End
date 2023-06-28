@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import starting.growthon.dto.ScheduleDto;
+import starting.growthon.entity.Badge;
 import starting.growthon.entity.User;
 
 import java.util.List;
@@ -32,4 +33,6 @@ public class MentorInfoResponseDto {
 
     // 멘토링 진행 시간에 대한 내용도 담아야 함
     private List<ScheduleDto> schedules;
+
+    private List<String> badges;
 }
