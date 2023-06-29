@@ -42,6 +42,7 @@ public class WebConfig implements WebMvcConfigurer {
          */
         // 참고: https://velog.io/@wnguswn7/CORS-%EC%97%90%EB%9F%AC-Access-to-XMLHttpRequest-at-from-origin-has-been-blocked-by-CORS-policy
         registry.addMapping("/**")
+                .allowedOrigins("http://localhost:3000", "http://43.201.17.248:3000")
                 .allowedOriginPatterns("*") // 안에 해당 주소를 넣어도 됨
                 .allowedHeaders("*")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS" , "PATCH");
