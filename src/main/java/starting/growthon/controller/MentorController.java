@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import starting.growthon.dto.MentorInfoRequestDto;
 import starting.growthon.entity.File;
 import starting.growthon.exception.ExceptionResponse;
+import starting.growthon.exception.TargetNotFoundException;
 import starting.growthon.service.FileService;
 import starting.growthon.service.MentorService;
 
@@ -31,6 +32,15 @@ public class MentorController {
         try {
             return ResponseEntity.ok(mentorService.infoUpload(mentorInfoRequestDto));
         } catch (IllegalStateException e) {
+            return errorMessage(e);
+        }
+    }
+
+    @GetMapping("/{uuid}")
+    public ResponseEntity<?> getMentor(@PathVariable Long uuid) {
+        try {
+            return ResponseEntity.ok(mentorService.getMentor(uuid));
+        } catch (TargetNotFoundException e) {
             return errorMessage(e);
         }
     }

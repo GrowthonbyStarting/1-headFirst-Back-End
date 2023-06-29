@@ -7,6 +7,7 @@ import starting.growthon.dto.MentorInfoRequestDto;
 import starting.growthon.dto.ScheduleDto;
 import starting.growthon.dto.response.MentorInfoResponseDto;
 import starting.growthon.entity.*;
+import starting.growthon.exception.TargetNotFoundException;
 import starting.growthon.repository.*;
 import starting.growthon.util.UserUtil;
 
@@ -323,5 +324,14 @@ public class MentorService {
         List<MentorAndBadge> mentorBadges = mentorAndBadgeRepository.findAllByMentorId(mentor.getId());
         if (mentorBadges.isEmpty())
             mentorAndBadgeRepository.save(new MentorAndBadge(mentor, badgeRepository.findByName("신규")));
+    }
+
+    public MentorInfo getMentor(Long uuid) {
+        User mentor = userRepository.findByUuid(uuid).filter(user -> user.getRole().equals("MENTOR")).get();
+        if (mentor == null)
+            throw new TargetNotFoundException("멘토가 없습니다.");
+        MentorInfo result = mentorInfoRepository.findByMentorId(mentor.getId());
+        if (result == null)
+            throw new TargetNotFoundException("멘토가 없습니다.");
     }
 }
