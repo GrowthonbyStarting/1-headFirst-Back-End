@@ -7,6 +7,8 @@ import starting.growthon.entity.User;
 import starting.growthon.exception.NotLoggedInException;
 import starting.growthon.repository.UserRepository;
 
+import java.util.Optional;
+
 @Component
 public class UserUtil {
     private final UserRepository userRepository;
@@ -18,8 +20,9 @@ public class UserUtil {
     public User getLoggedInUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
-        return userRepository.findByEmail(email).orElseThrow(
-                () -> new NotLoggedInException("로그인되지 않았습니다.")
-        );
+        Optional<User> findUser = userRepository.findByEmail(email);
+        if (findUser.isEmpty())
+            return null;
+        return findUser.get();
     }
 }
