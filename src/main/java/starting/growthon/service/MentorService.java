@@ -175,11 +175,13 @@ public class MentorService {
                         .target(mentorInfo.getTarget())
                         .prepare(mentorInfo.getPrepare())
                         .curriculum(mentorInfo.getCurriculum())
-                        .rule(mentorInfo.getRule())
                         .time(mentorInfo.getTime())
                         .cost(mentorInfo.getCost())
                         .view(mentorInfo.getView())
                         .followers(followers.size())
+                        .bank(mentorInfo.getBank())
+                        .bankNumber(mentorInfo.getBankNumber())
+                        .bankOwner(mentorInfo.getBankOwner())
                         .verified(mentorInfo.isVerified())
                         .profile(imgUrl)
                         .schedules(extractSchedule(schedules))
@@ -211,9 +213,11 @@ public class MentorService {
         mentorInfo.setTarget(dto.getTarget());
         mentorInfo.setPrepare(dto.getPrepare());
         mentorInfo.setCurriculum(dto.getCurriculum());
-        mentorInfo.setRule(dto.getRule());
         mentorInfo.setTime(dto.getTime());
         mentorInfo.setCost(dto.getCost());
+        mentorInfo.setBank(dto.getBank());
+        mentorInfo.setBankOwner(dto.getBankOwner());
+        mentorInfo.setBankNumber(dto.getBankNumber());
 
         for (ScheduleDto schedule : dto.getSchedules()) {
             for (String time : schedule.getTime()) {
@@ -243,12 +247,14 @@ public class MentorService {
                 .target(dto.getTarget())
                 .prepare(dto.getPrepare())
                 .curriculum(dto.getCurriculum())
-                .rule(dto.getRule())
                 .time(dto.getTime())
                 .cost(mentorInfo.getCost())
                 .profile(imgUrl)
                 .schedules(extractSchedule(schedules))
                 .followers(followers.size())
+                .bank(dto.getBank())
+                .bankOwner(dto.getBankOwner())
+                .bankNumber(dto.getBankNumber())
                 .verified(mentorInfo.isVerified())
                 .view(mentorInfo.getView())
                 .badges(mentorAndBadgeRepository.findAllByMentorId(mentor.getId()).stream().map(

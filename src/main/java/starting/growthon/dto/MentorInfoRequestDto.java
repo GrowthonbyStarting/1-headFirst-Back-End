@@ -25,8 +25,13 @@ public class MentorInfoRequestDto {
     private String prepare; // 멘티 준비사항
     private String curriculum; // 진행 방식
 
+    private String bank; // 은행명
+
+    private String bankNumber; // 계좌번호
+
+    private String bankOwner; // 예금주
+
     // 멘토링 방식
-    private String rule; // 진행 수단
     private String time; // 1회 진행 시간
     private int cost; // 1회 진행 가격
 

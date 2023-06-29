@@ -30,8 +30,13 @@ public class MentorInfo {
 
     private String curriculum; // 진행 방식
 
-    private String rule; // 진행 수단
     private String time; // 1회 진행 시간
+
+    private String bank; // 은행명
+
+    private String bankNumber; // 계좌번호
+
+    private String bankOwner; // 예금주
 
     // 멘토링 진행 시간에 대한 내용도 담아야 함
     private int cost;
