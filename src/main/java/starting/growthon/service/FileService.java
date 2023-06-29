@@ -50,14 +50,14 @@ public class FileService {
         file.setType(type);
     }
 
-    public FileDto mentorResumeUpload(MultipartFile file, File resume) throws IOException {
-        checkIsMentor();
+    public FileDto resumeUpload(MultipartFile file, File resume) throws IOException {
+        // checkIsMentor();
         if (!file.isEmpty()) {
             deleteFileIfExisted("RESUME", userUtil.getLoggedInUser().getId());
             String storedFileName = s3Uploader.outerUpload(file, "mentor-resume");
             saveFileInfo(resume, storedFileName, "RESUME");
             fileRepository.save(resume);
-            mentorInfoRepository.findByMentorId(userUtil.getLoggedInUser().getId()).setVerified(true);
+            // mentorInfoRepository.findByMentorId(userUtil.getLoggedInUser().getId()).setVerified(true);
             return new FileDto(userUtil.getLoggedInUser().getUuid(), storedFileName, "RESUME");
         }
         return null;

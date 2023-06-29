@@ -13,7 +13,6 @@ import starting.growthon.exception.ExceptionResponse;
 import starting.growthon.service.FileService;
 import starting.growthon.service.MentorService;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 @RestController
@@ -62,7 +61,7 @@ public class MentorController {
         headers.set("Access-Control-Allow-Methods","GET,POST,OPTIONS,DELETE,PUT");
 
         try {
-            return ResponseEntity.ok(fileService.mentorResumeUpload(file, resume));
+            return ResponseEntity.ok(fileService.resumeUpload(file, resume));
         } catch (IllegalStateException e) {
             return errorMessage(e);
         }

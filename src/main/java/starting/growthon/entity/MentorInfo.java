@@ -43,7 +43,7 @@ public class MentorInfo {
 
     private int view;
 
-    private boolean verified;
+    private boolean verified = true;
 
     private int count; // 피드백 횟수 (임시)
     
