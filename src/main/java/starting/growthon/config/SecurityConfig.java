@@ -2,6 +2,7 @@ package starting.growthon.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -60,7 +61,7 @@ public class SecurityConfig {
                 .requestMatchers("/test").permitAll()
                 .requestMatchers("/main").permitAll()
                 .requestMatchers("/search").permitAll()
-                .requestMatchers("/mentor").permitAll()
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .apply(new JwtSecurityConfig(tokenProvider));
