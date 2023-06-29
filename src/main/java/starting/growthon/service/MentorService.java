@@ -37,6 +37,8 @@ public class MentorService {
     private final MentorAndBadgeRepository mentorAndBadgeRepository;
     private final BadgeRepository badgeRepository;
 
+    private final CompanyTypeRepository companyTypeRepository;
+
     public MentorService(MentorInfoRepository mentorInfoRepository, UserRepository userRepository,
                          UserUtil userUtil,
                          CompanyRepository companyRepository,
@@ -44,7 +46,8 @@ public class MentorService {
                          FollowRepository followRepository, YearRepository yearRepository,
                          MentorAndScheduleRepository mentorAndScheduleRepository,
                          ScheduleRepository scheduleRepository, JobRepository jobRepository,
-                         MentorAndBadgeRepository mentorAndBadgeRepository, BadgeRepository badgeRepository) {
+                         MentorAndBadgeRepository mentorAndBadgeRepository, BadgeRepository badgeRepository,
+                         CompanyTypeRepository companyTypeRepository) {
         this.mentorInfoRepository = mentorInfoRepository;
         this.userRepository = userRepository;
         this.userUtil = userUtil;
@@ -57,6 +60,7 @@ public class MentorService {
         this.jobRepository = jobRepository;
         this.mentorAndBadgeRepository = mentorAndBadgeRepository;
         this.badgeRepository = badgeRepository;
+        this.companyTypeRepository = companyTypeRepository;
     }
 
     public MentorInfo changeRole() {
@@ -201,7 +205,10 @@ public class MentorService {
 
         mentor.setName(dto.getName());
         mentor.setNickname(dto.getNickname());
-        mentor.setCompany(companyRepository.findByName(dto.getCompany()));
+
+        Company company = ifComapnyNullCreate(dto.getCompany(), dto.getCompanyType());
+
+        mentor.setCompany(company);
         mentor.setYear(yearRepository.findByName(dto.getYear()));
 
         setJobAndSubJob(dto, mentor);
@@ -261,6 +268,18 @@ public class MentorService {
                         mentorAndBadge -> mentorAndBadge.getBadge().getName()
                 ).collect(Collectors.toList()))
                 .build();
+    }
+
+    private Company ifComapnyNullCreate(String company, String company_type) {
+        Company exist = companyRepository.findByName(company);
+        CompanyType existType = companyTypeRepository.findByName(company_type);
+        if (exist == null) {
+            Company newCompany = new Company();
+            newCompany.setName(company);
+            newCompany.setCompanyType(existType);
+            return companyRepository.save(newCompany);
+        }
+        return exist;
     }
 
     private List<ScheduleDto> extractSchedule(List<Schedule> schedules) {

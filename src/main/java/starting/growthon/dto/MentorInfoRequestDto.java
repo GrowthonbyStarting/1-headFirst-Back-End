@@ -12,6 +12,7 @@ public class MentorInfoRequestDto {
     private String name;
     private String nickname;
     private String company;
+    private String companyType;
     private String job;
     private String subjob;
     private String year;

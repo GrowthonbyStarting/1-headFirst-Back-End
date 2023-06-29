@@ -61,6 +61,7 @@ public class SecurityConfig {
                 .requestMatchers("/test").permitAll()
                 .requestMatchers("/main").permitAll()
                 .requestMatchers("/search").permitAll()
+                .requestMatchers("/mail/send").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .anyRequest().authenticated()
                 .and()

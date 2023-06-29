@@ -3,5 +3,6 @@ package starting.growthon.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import starting.growthon.entity.CompanyType;
 
-public interface CompanySizeRepository extends JpaRepository<CompanyType, Long> {
+public interface CompanyTypeRepository extends JpaRepository<CompanyType, Long> {
+    CompanyType findByName(String name);
 }
