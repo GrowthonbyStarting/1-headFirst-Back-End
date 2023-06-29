@@ -8,6 +8,7 @@ import starting.growthon.dto.MentoringDto;
 import starting.growthon.dto.ScheduleDto;
 import starting.growthon.dto.response.MentoringResponseDto;
 import starting.growthon.entity.User;
+import starting.growthon.repository.MentorInfoRepository;
 import starting.growthon.repository.UserRepository;
 import starting.growthon.util.UserUtil;
 
@@ -20,15 +21,17 @@ public class MenteeService {
     private final UserRepository userRepository;
     private final JavaMailSender javaMailSender;
 
-    public MenteeService(UserUtil userUtil, UserRepository userRepository, JavaMailSender javaMailSender) {
+    private final MentorInfoRepository mentorInfoRepository;
+    public MenteeService(UserUtil userUtil, UserRepository userRepository, JavaMailSender javaMailSender,
+                         MentorInfoRepository mentorInfoRepository) {
         this.userUtil = userUtil;
         this.userRepository = userRepository;
         this.javaMailSender = javaMailSender;
+        this.mentorInfoRepository = mentorInfoRepository;
     }
 
 
     public MentoringResponseDto mentoring(MentoringDto mentoringDto, Long uuid) {
-        System.out.println(mentoringDto);
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         User mentee = userUtil.getLoggedInUser();
         User mentor = userRepository.findByUuid(uuid).filter(user -> user.getRole().equals("MENTOR")).get();
@@ -56,6 +59,8 @@ public class MenteeService {
 
         javaMailSender.send(simpleMailMessage);
 
+        int count = mentorInfoRepository.findByMentorId(mentor.getId()).getCount();
+        mentorInfoRepository.findByMentorId(mentor.getId()).setCount(count + 1);
         return response;
     }
 
