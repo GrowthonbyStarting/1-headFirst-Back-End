@@ -17,4 +17,17 @@ public class ScheduleDto {
         this.day = day;
         this.time = time;
     }
+
+    public String toEmailString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(day).append(": ");
+        for (int i = 0; i < time.size(); i++) {
+            sb.append(time.get(i));
+            if (i < time.size() - 1) {
+                sb.append(", ");
+            }
+        }
+        sb.append("\n");
+        return sb.toString();
+    }
 }
