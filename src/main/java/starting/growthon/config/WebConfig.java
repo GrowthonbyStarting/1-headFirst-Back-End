@@ -45,12 +45,14 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedOrigins("http://localhost:3000", "http://43.201.17.248:3000")
                 .allowedOriginPatterns("*") // 안에 해당 주소를 넣어도 됨
                 .allowedHeaders("*")
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS" , "PATCH");
-                // .allowCredentials(true);
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS" , "PATCH")
+                .allowCredentials(true);
 
         registry.addMapping("/mentor/**")
+                .allowedOrigins("http://localhost:3000", "http://43.201.17.248:3000")
                 .allowedOriginPatterns("*") // 안에 해당 주소를 넣어도 됨
                 .allowedHeaders("*")
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS" , "PATCH");
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS" , "PATCH")
+                .allowCredentials(true);
     }
 }
