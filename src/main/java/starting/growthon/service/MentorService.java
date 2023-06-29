@@ -14,6 +14,7 @@ import starting.growthon.util.UserUtil;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -327,11 +328,12 @@ public class MentorService {
     }
 
     public MentorInfo getMentor(Long uuid) {
-        User mentor = userRepository.findByUuid(uuid).filter(user -> user.getRole().equals("MENTOR")).get();
-        if (mentor == null)
+        Optional<User> mentor = userRepository.findByUuid(uuid).filter(user -> user.getRole().equals("MENTOR"));
+        if (mentor.isEmpty())
             throw new TargetNotFoundException("멘토가 없습니다.");
-        MentorInfo result = mentorInfoRepository.findByMentorId(mentor.getId());
+        MentorInfo result = mentorInfoRepository.findByMentorId(mentor.get().getId());
         if (result == null)
             throw new TargetNotFoundException("멘토가 없습니다.");
+        return result;
     }
 }
