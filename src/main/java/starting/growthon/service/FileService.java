@@ -31,7 +31,7 @@ public class FileService {
 
     // 모든 파일 사이즈 용량 제한은 5MB
     public FileDto profileUpload(MultipartFile file, File image) throws IOException {
-        checkIsMentor();
+        // checkIsMentor();
         if (!file.isEmpty()) {
             deleteFileIfExisted("PROFILE", userUtil.getLoggedInUser().getId());
             String storedFileName = s3Uploader.outerUpload(file, "profiles");
