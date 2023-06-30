@@ -327,13 +327,12 @@ public class MentorService {
             mentorAndBadgeRepository.save(new MentorAndBadge(mentor, badgeRepository.findByName("신규")));
     }
 
-    public MentorInfo getMentor(Long uuid) {
+    public MentorInfoResponseDto getMentor(Long uuid) {
         Optional<User> mentor = userRepository.findByUuid(uuid).filter(user -> user.getRole().equals("MENTOR"));
         if (mentor.isEmpty())
             throw new TargetNotFoundException("멘토가 없습니다.");
-        MentorInfo result = mentorInfoRepository.findByMentorId(mentor.get().getId());
-        if (result == null)
-            throw new TargetNotFoundException("멘토가 없습니다.");
-        return result;
+        ArrayList<MentorInfoResponseDto> result = new ArrayList<>();
+        createMentorInfoDtoUsingMentor(result, mentor.get());
+        return result.get(0);
     }
 }
