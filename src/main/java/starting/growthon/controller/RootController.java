@@ -1,5 +1,6 @@
 package starting.growthon.controller;
 
+import jakarta.mail.MessagingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,8 +48,12 @@ public class RootController {
     }
 
     @PostMapping("/mentoring/{uuid}")
-    public ResponseEntity<?> requestMentoring(@RequestBody MentoringDto mentoringDto, @PathVariable Long uuid)  {
-        return ResponseEntity.ok(menteeService.mentoring(mentoringDto, uuid));
+    public ResponseEntity<?> requestMentoring(@RequestBody MentoringDto mentoringDto, @PathVariable Long uuid) {
+        try {
+            return ResponseEntity.ok(menteeService.mentoring(mentoringDto, uuid));
+        } catch (MessagingException e) {
+            return errorMessage(new RuntimeException(e));
+        }
     }
 
     private static ResponseEntity<ExceptionResponse> errorMessage(RuntimeException e) {
